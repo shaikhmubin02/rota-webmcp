@@ -17,7 +17,8 @@
     "shots": "node scripts/shots.mjs",
     "video": "node scripts/make-video.mjs",
     "video:fast": "node scripts/make-video.mjs --fast",
-    "thumb": "node scripts/make-thumb.mjs"
+    "thumb": "node scripts/make-thumb.mjs",
+    "gallery": "node scripts/make-gallery.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",

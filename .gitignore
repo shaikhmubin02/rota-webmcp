@@ -15,3 +15,5 @@ media/*
 !media/rota-thumbnail.jpg
 !media/_thumb/
 media/_thumb/*.png
+!media/gallery/
+!media/gallery/*.jpg
