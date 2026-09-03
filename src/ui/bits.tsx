@@ -126,6 +126,7 @@ export function Button({
   type = "button",
   className,
   ariaLabel,
+  testId,
 }: {
   children: ReactNode;
   onClick?: () => void;
@@ -136,12 +137,15 @@ export function Button({
   type?: "button" | "submit";
   className?: string;
   ariaLabel?: string;
+  /** Stable hook for tests and the demo-video driver. */
+  testId?: string;
 }) {
   return (
     <button
       type={type}
       title={title}
       aria-label={ariaLabel}
+      data-testid={testId}
       disabled={disabled}
       onClick={onClick}
       className={cx(

@@ -48,7 +48,7 @@ export function ProposalBar() {
               selected · proposed by {byAuthor.join(", ")} · nothing applied yet
             </p>
           </div>
-          <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+          <Button variant="ghost" size="sm" onClick={() => setOpen(true)} testId="open-review">
             Review
           </Button>
           <Button variant="primary" size="sm" onClick={() => setOpen(true)} disabled={accepted === 0}>
@@ -206,6 +206,7 @@ function ReviewDrawer({ onClose }: { onClose: () => void }) {
                 onClose();
               }}
               className="flex-1"
+              testId="approve-proposal"
             >
               <Icon path={ICONS.check} size={15} />
               Approve {accepted.length} change{accepted.length === 1 ? "" : "s"}

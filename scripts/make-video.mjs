@@ -15,7 +15,7 @@
  */
 import { execFile, execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { promisify } from "node:util";
 import ffmpegPath from "ffmpeg-static";
 import puppeteer from "puppeteer-core";
@@ -45,13 +45,36 @@ const HEIGHT = 940;
 /* -- audio ----------------------------------------------------------------- */
 
 const AUDIO_EXT = [".mp3", ".wav", ".m4a", ".ogg", ".flac", ".opus"];
+/** Where voiceover clips might live. */
+const AUDIO_DIRS = ["audio", MEDIA, "."];
+
+/**
+ * Finds a clip by beat number, accepting the naming people actually use:
+ * `b-1`, `beat1`, `beat-1`, `block1`, or just `1`, in any of the usual folders.
+ */
+function findBeatAudio(n) {
+  const stems = [`b-${n}`, `b${n}`, `beat${n}`, `beat-${n}`, `block${n}`, `block-${n}`, `${n}`];
+  for (const dir of AUDIO_DIRS) {
+    if (!existsSync(dir)) continue;
+    const files = readdirSync(dir);
+    for (const stem of stems) {
+      for (const ext of AUDIO_EXT) {
+        const hit = files.find((f) => f.toLowerCase() === `${stem}${ext}`);
+        if (hit) return join(dir, hit);
+      }
+    }
+  }
+  return null;
+}
 
 function findAudio(stem) {
-  if (!existsSync(MEDIA)) return null;
-  const files = readdirSync(MEDIA);
-  for (const ext of AUDIO_EXT) {
-    const hit = files.find((f) => f.toLowerCase() === `${stem}${ext}`);
-    if (hit) return join(MEDIA, hit);
+  for (const dir of AUDIO_DIRS) {
+    if (!existsSync(dir)) continue;
+    const files = readdirSync(dir);
+    for (const ext of AUDIO_EXT) {
+      const hit = files.find((f) => f.toLowerCase() === `${stem}${ext}`);
+      if (hit) return join(dir, hit);
+    }
   }
   return null;
 }
@@ -70,7 +93,7 @@ const BEAT_WORDS = [47, 43, 59, 28, 46, 62, 22];
 
 async function loadAudio() {
   const perBeat = [];
-  for (let i = 1; i <= 7; i++) perBeat.push(findAudio(`beat${i}`));
+  for (let i = 1; i <= 7; i++) perBeat.push(findBeatAudio(i));
 
   if (perBeat.every(Boolean)) {
     const durations = [];
@@ -313,8 +336,11 @@ async function waitForAgentIdle(page, timeout = 30000) {
     .catch(() => console.warn("  ! agent still busy at timeout"));
 }
 
-const clickByText = (tag, text) =>
-  `() => [...document.querySelectorAll('${tag}')].find(e => e.textContent.trim().startsWith(${JSON.stringify(text)}))`;
+const clickByText = (tag, text, scope = "") =>
+  `() => [...document.querySelectorAll('${scope}${scope ? " " : ""}${tag}')].find(e => e.textContent.trim().startsWith(${JSON.stringify(text)}))`;
+
+const dialogOpen = (page) =>
+  page.evaluate(() => Boolean(document.querySelector('[role="dialog"]')));
 
 /* -- the timeline ---------------------------------------------------------- */
 
@@ -362,7 +388,7 @@ function buildBeats(page) {
     {
       name: "4 · consent",
       async run() {
-        await moveAndClick(page, clickByText("button", "Review"), { settle: 700 });
+        await moveAndClick(page, '[data-testid="open-review"]', { settle: 700 });
         // Hover a couple of edits so the grid lights up behind the drawer.
         await sleep(400);
         for (const n of [1, 3]) {
@@ -400,7 +426,17 @@ function buildBeats(page) {
     {
       name: "5 · approve, then fix the breach",
       async run() {
-        await moveAndClick(page, clickByText("button", "Approve"), { settle: 900 });
+        // Make sure the drawer is actually open before reaching for Approve:
+        // an earlier click can land on the modal backdrop and dismiss it.
+        if (!(await dialogOpen(page))) {
+          console.warn("    ! drawer was closed; reopening");
+          await moveAndClick(page, '[data-testid="open-review"]', { settle: 700 });
+        }
+        await moveAndClick(page, '[data-testid="approve-proposal"]', { settle: 900 });
+        if (await dialogOpen(page)) {
+          console.warn("    ! drawer still open after Approve; retrying");
+          await moveAndClick(page, '[data-testid="approve-proposal"]', { settle: 900 });
+        }
         await sleep(500);
         await typePrompt(page, "Fix the close-then-open");
         await waitForAgentIdle(page);
@@ -522,7 +558,9 @@ if (audio.mode === "beats") {
   const listFile = join(MEDIA, "_concat.txt");
   writeFileSync(
     listFile,
-    audio.files.map((f) => `file '${f.replace(/\\/g, "/").replace(/^media\//, "")}'`).join("\n"),
+    // Absolute paths: the concat demuxer resolves relative entries against the
+    // list file's own directory, and the clips may live in a different folder.
+    audio.files.map((f) => `file '${resolve(f).replace(/\\/g, "/")}'`).join("\n"),
     "utf8",
   );
   audioInput = join(MEDIA, "_voice.m4a");
@@ -556,7 +594,7 @@ execFileSync(
     "-i", audioInput,
     ...(filters.length ? ["-filter:a", filters.join(",")] : []),
     "-c:v", "libx264",
-    "-preset", "slow",
+    "-preset", "medium",
     "-crf", "20",
     "-pix_fmt", "yuv420p",
     // Even dimensions, and 1080p-friendly.
