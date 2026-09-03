@@ -27,7 +27,7 @@ This is close to ideal work for an agent — and close to ideal work for **WebMC
 
 ## Try it
 
-**Live:** _add your deployed URL here_
+**Live: https://shaikhmubin02.github.io/rota-webmcp/**
 
 No sign-up, no API key, nothing to install. Two ways in:
 
@@ -160,11 +160,17 @@ node scripts/smoke.mjs http://localhost:5173/   # 33 browser checks
 
 ### Deploying
 
+A static bundle with no backend, so it deploys anywhere that serves files.
+
+**GitHub Pages** (what the live URL uses) happens automatically on push to `main` via [`.github/workflows/pages.yml`](.github/workflows/pages.yml). The workflow runs the engine self-test first, so a failing build never reaches the live URL. Pages serves from a repository subpath, so the asset base comes from `VITE_BASE` at build time.
+
+**Vercel / Netlify / Cloudflare Pages** serve from the root, so no `VITE_BASE` is needed:
+
 ```bash
-npx vercel --prod
+npx vercel --prod          # or: npx netlify deploy --prod --dir dist
 ```
 
-[`vercel.json`](vercel.json) sets the build, the SPA rewrite and `Permissions-Policy: tools=(self)`. It is a static bundle with no backend, so it deploys anywhere that serves files.
+[`vercel.json`](vercel.json) sets the build, the SPA rewrite and `Permissions-Policy: tools=(self)`. That header is belt-and-braces — WebMCP is enabled by default in top-level documents, so the app works without it on hosts like Pages that cannot set response headers.
 
 ## Honest limitations
 
@@ -179,3 +185,5 @@ npx vercel --prod
 MIT — see [LICENSE](LICENSE).
 
 Built for the [OpenAI WebMCP Challenge](https://openai.com/webmcp-challenge/), September 2026.
+
+Submission text: [DEVPOST.md](DEVPOST.md) · Demo script: [VIDEO.md](VIDEO.md) · Tool reference: [TOOLS.md](TOOLS.md)
