@@ -2,7 +2,7 @@
   "name": "rota-webmcp",
   "private": true,
   "version": "1.0.0",
-  "description": "Rota — an agent-collaborative shift scheduling studio built on WebMCP. The agent does the grind; the human stays in charge.",
+  "description": "Rota \u2014 an agent-collaborative shift scheduling studio built on WebMCP. The agent does the grind; the human stays in charge.",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -11,7 +11,10 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit false --emitDeclarationOnly false",
     "tools:doc": "esbuild scripts/gen-tools-doc.ts --bundle --platform=node --format=esm --outfile=node_modules/.tmp/gendoc.mjs --log-level=error && node node_modules/.tmp/gendoc.mjs",
-    "selftest": "esbuild scripts/selftest.ts --bundle --platform=node --format=esm --outfile=node_modules/.tmp/selftest.mjs --log-level=error && node node_modules/.tmp/selftest.mjs"
+    "selftest": "esbuild scripts/selftest.ts --bundle --platform=node --format=esm --outfile=node_modules/.tmp/selftest.mjs --log-level=error && node node_modules/.tmp/selftest.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "agent-test": "node scripts/agent-test.mjs",
+    "shots": "node scripts/shots.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",

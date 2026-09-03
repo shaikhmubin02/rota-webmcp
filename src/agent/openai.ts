@@ -16,6 +16,80 @@ interface ChatMessage {
 
 const MAX_ROUNDS = 12;
 
+/** Fields not every model family accepts; dropped and retried on a 400. */
+const OPTIONAL_FIELDS = ["parallel_tool_calls", "tool_choice"] as const;
+
+interface ChatRequest {
+  model: string;
+  messages: ChatMessage[];
+  tools: unknown[];
+}
+
+/**
+ * Posts one Chat Completions request.
+ *
+ * Whoever runs this brings their own key and picks their own model, so the
+ * request has to survive a model that rejects one of the optional fields. On a
+ * 400 that names an unsupported or unrecognised parameter, the offending
+ * optional field is dropped and the call retried once, rather than dead-ending
+ * a judge with an opaque API error.
+ */
+async function postChat(
+  request: ChatRequest,
+  apiKey: string,
+  signal: AbortSignal,
+): Promise<{ choices?: { message?: ChatMessage }[] }> {
+  const body: Record<string, unknown> = {
+    ...request,
+    tool_choice: "auto",
+    parallel_tool_calls: false,
+  };
+
+  for (let attempt = 0; attempt <= OPTIONAL_FIELDS.length; attempt++) {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      signal,
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify(body),
+    });
+
+    if (response.ok) return await response.json();
+
+    const raw = await response.text();
+    let detail = raw.slice(0, 400);
+    let param: string | undefined;
+    try {
+      const parsed = JSON.parse(raw)?.error;
+      detail = parsed?.message ?? detail;
+      param = parsed?.param;
+    } catch {
+      /* keep the raw body */
+    }
+
+    const droppable = OPTIONAL_FIELDS.find(
+      (field) =>
+        field in body &&
+        (param === field || (detail.includes(field) && /unsupported|unrecognized|not supported/i.test(detail))),
+    );
+    if (response.status === 400 && droppable) {
+      delete body[droppable];
+      continue;
+    }
+
+    const hint =
+      response.status === 401
+        ? " Check the API key."
+        : response.status === 404
+          ? ` Is "${request.model}" available on your account? Try another model in the key panel.`
+          : response.status === 429
+            ? " Rate limited or out of quota — wait a moment, or use the scripted planner, which needs no key."
+            : "";
+    throw new Error(`OpenAI API returned ${response.status}: ${detail}${hint}`);
+  }
+
+  throw new Error("OpenAI API rejected the request even after dropping optional parameters.");
+}
+
 /**
  * A bring-your-own-key agent loop over the OpenAI Chat Completions API.
  *
@@ -53,36 +127,11 @@ export async function runOpenAITurn(
       },
     }));
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
+    const data = await postChat(
+      { model: config.model, messages, tools },
+      config.apiKey,
       signal,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: config.model,
-        messages,
-        tools,
-        tool_choice: "auto",
-        parallel_tool_calls: false,
-      }),
-    });
-
-    if (!response.ok) {
-      const body = await response.text();
-      let detail = body.slice(0, 400);
-      try {
-        detail = JSON.parse(body)?.error?.message ?? detail;
-      } catch {
-        /* keep the raw body */
-      }
-      throw new Error(
-        `OpenAI API returned ${response.status}: ${detail}${response.status === 404 ? ` (is "${config.model}" available on your account? Try another model.)` : ""}`,
-      );
-    }
-
-    const data = await response.json();
+    );
     const choice = data.choices?.[0];
     const message: ChatMessage = choice?.message ?? { role: "assistant", content: "" };
     messages.push(message);

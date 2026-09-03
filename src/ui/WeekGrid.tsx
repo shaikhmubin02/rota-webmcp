@@ -67,7 +67,7 @@ export function WeekGrid() {
               )}
             >
               <header className="sticky top-0 z-10 mb-2 rounded-apple-lg border border-hairline material px-2.5 py-2">
-                <div className="flex items-baseline justify-between">
+                <div className="flex items-baseline justify-between gap-1.5">
                   <h3
                     className={cx(
                       "text-[13px] font-semibold",
@@ -76,7 +76,9 @@ export function WeekGrid() {
                   >
                     {fmtDateShort(date)}
                   </h3>
-                  <span className="text-[10px] tabular-nums text-label-3">{hours.toFixed(0)}h</span>
+                  <span className="shrink-0 text-[10px] tabular-nums text-label-3">
+                    {hours.toFixed(0)}h
+                  </span>
                 </div>
                 <div className="mt-1.5">
                   <Meter
@@ -377,7 +379,9 @@ export function ViolationsStrip() {
             title={v.message}
             className={cx(
               "max-w-[26ch] shrink-0 truncate rounded-md px-2 py-1 text-[11px] transition-colors hover:brightness-95",
-              v.severity === "hard" ? "bg-red-soft text-red" : "bg-orange-soft text-orange",
+              v.severity === "hard" && v.ruleId !== "coverage_met"
+                ? "bg-red-soft text-red"
+                : "bg-orange-soft text-orange",
             )}
           >
             {v.message}
