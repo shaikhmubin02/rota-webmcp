@@ -1,0 +1,356 @@
+@import "tailwindcss";
+
+/* Theme is driven by a data attribute so it can be toggled at runtime and
+   still respect the OS preference on first load. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  /* Surfaces. Layered the way Apple layers them: a recessed page, opaque cards
+     sitting on it, and translucent "material" for anything that floats. */
+  --surface-base: #f5f5f7;
+  --surface-raised: #ffffff;
+  --surface-inset: #ececf0;
+  --surface-material: rgba(255, 255, 255, 0.72);
+  --surface-material-thick: rgba(255, 255, 255, 0.88);
+  --surface-hover: rgba(0, 0, 0, 0.035);
+  --surface-active: rgba(0, 0, 0, 0.06);
+
+  /* Type. Three levels, no more. */
+  --label-primary: #1d1d1f;
+  --label-secondary: #6e6e73;
+  --label-tertiary: #a1a1a6;
+
+  /* Hairlines, not borders. */
+  --separator: rgba(0, 0, 0, 0.09);
+  --separator-strong: rgba(0, 0, 0, 0.16);
+
+  /* One accent, plus the system palette for semantics only. */
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-soft: rgba(0, 113, 227, 0.1);
+  --accent-label: #ffffff;
+
+  --system-red: #d70015;
+  --system-orange: #c93400;
+  --system-green: #248a3d;
+  --system-teal: #0071a4;
+  --system-purple: #8944ab;
+  --system-blue: #0071e3;
+
+  --system-red-soft: rgba(215, 0, 21, 0.09);
+  --system-orange-soft: rgba(201, 52, 0, 0.09);
+  --system-green-soft: rgba(36, 138, 61, 0.09);
+  --system-purple-soft: rgba(137, 68, 171, 0.09);
+  --system-blue-soft: rgba(0, 113, 227, 0.09);
+
+  --fill-red: #ff3b30;
+  --fill-orange: #ff9500;
+  --fill-green: #34c759;
+  --fill-blue: #007aff;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-float:
+    0 1px 1px rgba(0, 0, 0, 0.03), 0 8px 24px rgba(0, 0, 0, 0.09),
+    0 24px 60px rgba(0, 0, 0, 0.08);
+  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --surface-base: #000000;
+  --surface-raised: #1c1c1e;
+  --surface-inset: #2c2c2e;
+  --surface-material: rgba(28, 28, 30, 0.72);
+  --surface-material-thick: rgba(28, 28, 30, 0.9);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --surface-active: rgba(255, 255, 255, 0.1);
+
+  --label-primary: #f5f5f7;
+  --label-secondary: #a1a1a6;
+  --label-tertiary: #6e6e73;
+
+  --separator: rgba(255, 255, 255, 0.11);
+  --separator-strong: rgba(255, 255, 255, 0.2);
+
+  --accent: #0a84ff;
+  --accent-hover: #409cff;
+  --accent-soft: rgba(10, 132, 255, 0.16);
+  --accent-label: #ffffff;
+
+  --system-red: #ff453a;
+  --system-orange: #ff9f0a;
+  --system-green: #32d74b;
+  --system-teal: #64d2ff;
+  --system-purple: #bf5af2;
+  --system-blue: #0a84ff;
+
+  --system-red-soft: rgba(255, 69, 58, 0.15);
+  --system-orange-soft: rgba(255, 159, 10, 0.15);
+  --system-green-soft: rgba(50, 215, 75, 0.15);
+  --system-purple-soft: rgba(191, 90, 242, 0.15);
+  --system-blue-soft: rgba(10, 132, 255, 0.15);
+
+  --fill-red: #ff453a;
+  --fill-orange: #ff9f0a;
+  --fill-green: #32d74b;
+  --fill-blue: #0a84ff;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.35);
+  --shadow-float: 0 8px 28px rgba(0, 0, 0, 0.5), 0 28px 70px rgba(0, 0, 0, 0.45);
+  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* `inline` so the utilities compile to var() references and flip live. */
+@theme inline {
+  --color-base: var(--surface-base);
+  --color-raised: var(--surface-raised);
+  --color-inset: var(--surface-inset);
+  --color-material: var(--surface-material);
+  --color-material-thick: var(--surface-material-thick);
+  --color-hover: var(--surface-hover);
+  --color-active: var(--surface-active);
+
+  --color-label: var(--label-primary);
+  --color-label-2: var(--label-secondary);
+  --color-label-3: var(--label-tertiary);
+
+  --color-hairline: var(--separator);
+  --color-hairline-strong: var(--separator-strong);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-label: var(--accent-label);
+
+  --color-red: var(--system-red);
+  --color-orange: var(--system-orange);
+  --color-green: var(--system-green);
+  --color-teal: var(--system-teal);
+  --color-purple: var(--system-purple);
+  --color-blue: var(--system-blue);
+
+  --color-fill-red: var(--fill-red);
+  --color-fill-orange: var(--fill-orange);
+  --color-fill-green: var(--fill-green);
+  --color-fill-blue: var(--fill-blue);
+
+  --color-red-soft: var(--system-red-soft);
+  --color-orange-soft: var(--system-orange-soft);
+  --color-green-soft: var(--system-green-soft);
+  --color-purple-soft: var(--system-purple-soft);
+  --color-blue-soft: var(--system-blue-soft);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-float: var(--shadow-float);
+
+  --radius-apple: 12px;
+  --radius-apple-lg: 18px;
+
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter var", "Segoe UI",
+    system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", monospace;
+
+  --ease-apple: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+@layer base {
+  html {
+    background: var(--surface-base);
+  }
+
+  body {
+    margin: 0;
+    background: var(--surface-base);
+    color: var(--label-primary);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+  }
+
+  /* Apple tightens tracking as type gets larger, never the other way round. */
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.022em;
+    font-weight: 600;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--separator-strong) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--separator-strong);
+    border-radius: 99px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    outline-offset: 1px;
+    border-radius: 6px;
+  }
+
+  button {
+    cursor: pointer;
+    font: inherit;
+    letter-spacing: inherit;
+  }
+
+  input,
+  select,
+  textarea {
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Vibrancy. The thing that makes a surface feel like macOS rather than a
+     flat div: translucency plus a real backdrop blur plus a hairline. */
+  .material {
+    background: var(--surface-material);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    border-color: var(--separator);
+  }
+
+  .material-thick {
+    background: var(--surface-material-thick);
+    backdrop-filter: saturate(180%) blur(40px);
+    -webkit-backdrop-filter: saturate(180%) blur(40px);
+    border-color: var(--separator);
+  }
+
+  .card {
+    background: var(--surface-raised);
+    border: 1px solid var(--separator);
+    border-radius: var(--radius-apple);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Staged, unapproved changes read as "proposed" -- tinted and dashed, never
+     as if they were already true. */
+  .proposed {
+    border-style: dashed !important;
+    border-color: color-mix(in srgb, var(--system-purple) 55%, transparent) !important;
+    background: var(--system-purple-soft) !important;
+  }
+
+  .proposed-remove {
+    border-style: dashed !important;
+    border-color: color-mix(in srgb, var(--system-red) 45%, transparent) !important;
+    background: var(--system-red-soft) !important;
+  }
+
+  .proposed-remove .strike {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  /* What the agent is pointing at. A ring, briefly, then it settles. */
+  .lit {
+    animation: lit-ring 2s var(--ease-apple) 2;
+    border-color: color-mix(in srgb, var(--system-orange) 60%, transparent) !important;
+  }
+
+  .agent-filled {
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--system-purple) 30%, transparent),
+      var(--shadow-card);
+  }
+
+  .prose-tool {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* iOS-style segmented control. */
+  .segmented {
+    background: var(--surface-inset);
+    border-radius: 9px;
+    padding: 2px;
+    display: inline-flex;
+    gap: 2px;
+  }
+
+  .segmented > button {
+    border-radius: 7px;
+    padding: 4px 11px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--label-secondary);
+    transition: all 0.18s var(--ease-apple);
+  }
+
+  .segmented > button[aria-pressed="true"] {
+    background: var(--surface-raised);
+    color: var(--label-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+  }
+}
+
+@keyframes lit-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--system-orange) 0%, transparent);
+  }
+  30% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--system-orange) 32%, transparent);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.32s var(--ease-spring) both;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.breathe {
+  animation: breathe 1.5s var(--ease-apple) infinite;
+}
