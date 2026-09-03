@@ -86,7 +86,19 @@ function planFor(p: Parsed): Plan {
     absence:
       score(t, ["sick", "called in", "can't work", "cannot work", "off ", "dropped out", "no-show", "absent"]) +
       (p.staffId ? 1 : 0),
-    rest: score(t, ["clopen", "close then open", "rest", "closing and then", "back to back", "9 hours", "turnaround"]),
+    rest: score(t, [
+      "clopen",
+      "close-then-open",
+      "close then open",
+      "rest",
+      "closing and then",
+      "back to back",
+      "back-to-back",
+      "9 hours",
+      "9h",
+      "turnaround",
+      "swap",
+    ]),
     fill: score(t, ["fill", "finish", "complete", "gap", "hole", "unfilled", "open shift", "cover the week", "build"]),
     fairness: score(t, ["fair", "uneven", "weekend", "carrying", "contracted hours", "hours are", "share", "balance"]),
     cost: score(t, ["cost", "budget", "overtime", "expensive", "wage", "money", "save", "cheaper"]),
@@ -132,12 +144,18 @@ function planFor(p: Parsed): Plan {
             .join("\n"),
       };
 
-    case "rest":
+    case "rest": {
+      const breach = restBreach();
       return {
         intent: "fix a rest-period breach",
         steps: [
           { tool: "validate_schedule", args: { severity: "hard" } },
-          { tool: "suggest_swap_for", args: { staff: p.staffId ?? "marco", date: "thursday", role: "shift_lead", when: "opening" } },
+          {
+            tool: "suggest_swap_for",
+            args: breach
+              ? { staff: breach.staffId, shift_id: breach.shiftId }
+              : { staff: p.staffId ?? "marco", date: "thursday", role: "shift_lead", when: "opening" },
+          },
           { tool: "validate_schedule", args: { severity: "hard" } },
           { tool: "request_approval", args: { summary: "Resolve the close-then-open" } },
         ],
@@ -151,6 +169,7 @@ function planFor(p: Parsed): Plan {
             .filter(Boolean)
             .join("\n"),
       };
+    }
 
     case "fill":
       return {
@@ -246,15 +265,28 @@ function planFor(p: Parsed): Plan {
 
     case "publish":
       return {
-        intent: "publish the rota",
-        steps: [{ tool: "describe_pending_changes" }, { tool: "get_schedule_overview" }],
+        intent: "draft the publish note",
+        steps: [
+          { tool: "get_schedule_overview" },
+          // Filling the form is allowed; submitting it is not. This is the
+          // declarative tool, so the browser enforces that split for us.
+          {
+            tool: "publish_schedule",
+            args: {
+              message:
+                "Next week's rota is up. Thursday's cover has changed - Sofia opens and Marco moves across, so nobody is closing and opening back to back. Shout if anything looks wrong.",
+              notify: "leads",
+              acknowledged: true,
+            },
+          },
+        ],
         summarise: (r) =>
           [
-            r.get("describe_pending_changes") ?? "Nothing is staged.",
+            r.get("publish_schedule") ?? "",
             "",
-            (r.get("get_schedule_overview") ?? "").split("\n").slice(0, 4).join("\n"),
+            (r.get("get_schedule_overview") ?? "").split("\n").slice(1, 4).join("\n"),
             "",
-            "I can't publish. The publish form is a declarative WebMCP tool without toolautosubmit, which means I can fill it in but only you can press Publish. Approve the proposal first, then the button is yours.",
+            "That is as far as I can go. The publish form is a declarative WebMCP tool with no toolautosubmit attribute, so I can fill it in but the browser hands the submit button to you.",
           ]
             .filter(Boolean)
             .join("\n"),
@@ -285,6 +317,16 @@ function planFor(p: Parsed): Plan {
         },
       };
   }
+}
+
+/** The live minimum-rest breach, if the week still has one. */
+function restBreach(): { staffId: string; shiftId: string } | null {
+  const roster = previewRoster(useStore.getState());
+  const v = validateAll(roster).find(
+    (x) => x.ruleId === "min_rest_between_shifts" && x.staffId && x.shiftIds.length > 1,
+  );
+  // shiftIds[1] is the later shift of the pair -- the one to move.
+  return v?.staffId ? { staffId: v.staffId, shiftId: v.shiftIds[1] } : null;
 }
 
 function worstHighlight(): Record<string, unknown> {

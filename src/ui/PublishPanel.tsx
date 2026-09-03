@@ -33,8 +33,12 @@ export function PublishPanel() {
     [committed.shifts, dates],
   );
   const gaps = useMemo(() => coverageGaps(roster).reduce((n, g) => n + g.missing, 0), [roster]);
+  // Counted the same way as the summary strip: an unfilled slot is unfinished
+  // work, not a rule breach, and it is already reported separately above.
   const hard = useMemo(
-    () => validateAll(roster).filter((v) => v.severity === "hard").length,
+    () =>
+      validateAll(roster).filter((v) => v.severity === "hard" && v.ruleId !== "coverage_met")
+        .length,
     [roster],
   );
   const pending = proposal?.edits.filter((e) => e.accepted).length ?? 0;
@@ -64,7 +68,9 @@ export function PublishPanel() {
               {draftCount > 0 ? `${draftCount} draft` : "all published"}
             </Badge>
             <Badge tone={gaps > 0 ? "warn" : "good"}>{gaps} unfilled</Badge>
-            <Badge tone={hard > 0 ? "bad" : "good"}>{hard} hard breaches</Badge>
+            <Badge tone={hard > 0 ? "bad" : "good"}>
+              {hard} rule {hard === 1 ? "breach" : "breaches"}
+            </Badge>
             {pending > 0 && <Badge tone="agent">{pending} unapproved</Badge>}
           </div>
           {pending > 0 && (

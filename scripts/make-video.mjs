@@ -446,17 +446,21 @@ function buildBeats(page) {
     {
       name: "6 · the missing attribute",
       async run() {
-        await moveAndClick(page, clickByText('[role="tab"]', "Publish"), { settle: 500 });
-        await sleep(300);
-        await moveAndClick(page, clickByText('[role="tab"]', "Agent"), { settle: 300 });
+        // Beat 5 ends with the swap staged and the drawer open, which is the
+        // right picture for that narration -- but the modal swallows every
+        // click, so it has to be cleared before this beat can do anything.
+        if (await dialogOpen(page)) {
+          await moveAndClick(page, '[data-testid="approve-proposal"]', { settle: 800 });
+        }
         await typePrompt(
           page,
           "Draft the publish note for the team explaining the Thursday change.",
         );
         await waitForAgentIdle(page);
-        await sleep(1200);
-        // The agent's fill switches the panel to Publish and focuses the button.
-        await moveAndClick(page, "#publish-form button[type=submit]", { settle: 900 });
+        // Filling the declarative form fires rota:form-filled, which switches
+        // the panel to Publish and focuses the submit button by itself.
+        await sleep(1400);
+        await moveAndClick(page, "#publish-form button[type=submit]", { settle: 1000 });
       },
     },
     {
