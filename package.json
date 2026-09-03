@@ -15,7 +15,8 @@
     "smoke": "node scripts/smoke.mjs",
     "agent-test": "node scripts/agent-test.mjs",
     "shots": "node scripts/shots.mjs",
-    "video": "node scripts/make-video.mjs"
+    "video": "node scripts/make-video.mjs",
+    "video:fast": "node scripts/make-video.mjs --fast"
   },
   "dependencies": {
     "react": "^19.2.0",

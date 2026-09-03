@@ -3,114 +3,116 @@
  For fish.audio/app/text-to-speech
 =====================================================================
 
+310 words - down from 412. At a slow 110 words per minute that is 2:45;
+at a normal 140 it is 2:09.
+
+If your generated total still comes out over 2:50, don't re-record. Say
+so, and the video build applies a two-to-three percent speed-up, which
+is inaudible.
+
 HOW TO USE
 
-Generate SEVEN separate clips, one per block below. Paste only the text
-between the dashed lines - not the "BLOCK n" headings.
+Generate SEVEN separate clips, one per block. Paste only the text between
+the dashed lines - not the "BLOCK n" headings.
 
-Seven clips rather than one is deliberate: it gives exact start times for
-each beat, so the screen recording can be cut to your pacing instead of
-the other way round. It also means a bad take only costs you one block.
+Seven clips rather than one is deliberate: it gives an exact measured
+length for each beat, so the screen recording is cut to your pacing
+instead of the other way round. A bad take also only costs one block.
 
 Save them as:  beat1.mp3  beat2.mp3  ...  beat7.mp3
-(WAV is fine too. Either format works.)
+WAV works too.
 
 VOICE SETTINGS
 
-- Pick a calm, level narrator voice. This is a product explanation, not
-  an advert - avoid anything bright or salesy.
-- Speed: normal, or a touch slower. The whole thing is 405 words and has
-  to land under three minutes, so do not go below about 0.9x.
-- If the voice sounds rushed at the ends of sentences, lower the speed
-  slightly rather than adding punctuation.
+- A calm, level narrator. This is a product explanation, not an advert.
+- Normal speed. You no longer need to rush.
+- If the total still comes out over 2:50, say so - the video build can
+  speed the audio by a few percent, which is inaudible.
 
 IF A WORD COMES OUT WRONG
 
-- "Web MCP" should sound like "web em-see-pee". If it reads it as one
-  garbled word, try "Web M C P" or "Web M.C.P." instead.
-- "rota" should rhyme with "motor". If it says "rot-uh", swap the word
-  for "roster" throughout - the meaning is identical and the video never
-  shows the word on screen.
-- "Marco" is MAR-ko. "Sofia" is so-FEE-ah. "Liam" is LEE-am.
-
-A combined single-block version is at the bottom, if you would rather do
-one generation. Seven is still better.
+- "Web MCP" should sound like "web em-see-pee". If it garbles it, try
+  "Web M C P" or "Web M.C.P."
+- "rota" should rhyme with "motor". If it says "rot-uh", replace every
+  "rota" with "roster" - same meaning, and the word never appears on
+  screen.
+- Marco is MAR-ko. Sofia is so-FEE-ah. Liam is LEE-am.
 
 
 =====================================================================
- BLOCK 1  -  about 20 seconds
+ BLOCK 1
 =====================================================================
 ---------------------------------------------------------------------
-This is next week's rota for a coffee shop with fourteen staff. Three quarters finished, with a problem in it you cannot see.
+This is next week's rota for a fourteen-person coffee shop. Three quarters finished, with a problem you cannot see.
 
-Marco closes on Wednesday at half past nine, and opens on Thursday at half past six. Nine hours between shifts. Eleven are legally required.
+Marco closes Wednesday at half past nine, and opens Thursday at half past six. Nine hours' rest, where eleven are required.
 
-Both shifts look perfectly reasonable on their own. That is why every real rota has one.
+Both look perfectly reasonable on their own.
 ---------------------------------------------------------------------
 
 
 =====================================================================
- BLOCK 2  -  about 28 seconds
+ BLOCK 2
 =====================================================================
 ---------------------------------------------------------------------
 So I'll ask.
 
-It isn't reasoning about employment law. It's calling the page's own rule engine, and quoting the answer back. Fifteen rules, all owned by the page.
+It isn't reasoning about employment law. It's calling the page's own rule engine, and quoting the answer back.
 
-And because these tools run inside the page, it can do something a server-side integration cannot. It puts the problem on my screen. That amber ring is the agent pointing.
+And because these tools run inside the page, it can put the problem on my screen.
 ---------------------------------------------------------------------
 
 
 =====================================================================
- BLOCK 3  -  about 40 seconds
+ BLOCK 3
 =====================================================================
 ---------------------------------------------------------------------
-Now the real work. Fifteen empty slots. It runs the venue's solver, and stages fourteen assignments. Thirteen hundred and eighty four pounds of extra wages.
+Fifteen empty slots. It runs the venue's solver and stages fourteen assignments.
 
-But look at what hasn't happened. Nothing here has changed. Every dashed purple card is a proposal, drawn on the shift it would affect. So I'm reviewing the change against the thing it changes, instead of reading a list and imagining the result.
+But nothing here has changed. Every dashed purple card is a proposal, drawn on the shift it would affect. I'm reviewing the change against the thing it changes.
 
-And it's honest about the one it couldn't do. Sunday's closing lead is impossible. Liam is seventeen, and nobody else left is a certified lead.
----------------------------------------------------------------------
-
-
-=====================================================================
- BLOCK 4  -  about 26 seconds
-=====================================================================
----------------------------------------------------------------------
-Coverage, breaches, fairness, cost. Before, and after.
-
-Notice breaches is still one. Filling empty slots doesn't fix Marco's rest period, and it isn't pretending otherwise.
-
-Fourteen changes, fourteen checkboxes. I can take twelve, and drop two.
+And it's honest about the one it couldn't do. Sunday's close is impossible: Liam is seventeen, and nobody else is a certified lead.
 ---------------------------------------------------------------------
 
 
 =====================================================================
- BLOCK 5  -  about 24 seconds
+ BLOCK 4
+=====================================================================
+---------------------------------------------------------------------
+Coverage, breaches, fairness, cost. Before and after.
+
+Breaches is still one. Filling empty slots doesn't fix Marco's rest period, and it isn't pretending otherwise.
+
+Fourteen changes, fourteen checkboxes.
+---------------------------------------------------------------------
+
+
+=====================================================================
+ BLOCK 5
 =====================================================================
 ---------------------------------------------------------------------
 Approving is me.
 
-The agent has no tool that commits anything. No approve, no publish, anywhere in the thirty six tools it can see. That isn't a guardrail bolted on afterwards. There is simply no code path.
+The agent has no tool that commits anything. No approve, no publish, anywhere in the thirty six tools it can see. That isn't a guardrail bolted on. There is no code path.
 
-Now the rest breach. It finds a two way swap. Sofia takes Thursday morning, Marco moves across, and nobody loses a shift.
+The rest breach? It finds a legal swap. Nobody loses a shift.
 ---------------------------------------------------------------------
 
 
 =====================================================================
- BLOCK 6  -  about 28 seconds
+ BLOCK 6
 =====================================================================
 ---------------------------------------------------------------------
-Publishing is a declarative Web MCP tool. An ordinary HTML form, compiled into a tool schema.
+Publishing is a declarative Web MCP tool - an ordinary HTML form.
 
-What it doesn't have is tool auto submit. Per the spec, an agent can fill this in, and then it must stop. The browser focuses the button, and waits.
+What it doesn't have is tool auto submit. So an agent can fill this in, then it must stop.
 
-So the one action that actually tells fourteen people when they're working is reachable by an agent as far as the button, and no further. The whole argument of this project is one missing HTML attribute.
+So the one action that tells fourteen people when they're working is reachable by an agent as far as the button, and no further. The whole argument of this project is one missing HTML attribute.
 ---------------------------------------------------------------------
 
 
 =====================================================================
- BLOCK 7  -  about 12 seconds
+ BLOCK 7
 =====================================================================
 ---------------------------------------------------------------------
 Thirty six tools, and a polyfill, so it works in any browser today.
@@ -121,44 +123,44 @@ The agent does the grind. I stay in charge.
 
 =====================================================================
  ALTERNATIVE: ONE SINGLE BLOCK
- Use this only if you would rather do a single generation.
+ Only if you would rather do a single generation. Seven is better.
 =====================================================================
 ---------------------------------------------------------------------
-This is next week's rota for a coffee shop with fourteen staff. Three quarters finished, with a problem in it you cannot see.
+This is next week's rota for a fourteen-person coffee shop. Three quarters finished, with a problem you cannot see.
 
-Marco closes on Wednesday at half past nine, and opens on Thursday at half past six. Nine hours between shifts. Eleven are legally required.
+Marco closes Wednesday at half past nine, and opens Thursday at half past six. Nine hours' rest, where eleven are required.
 
-Both shifts look perfectly reasonable on their own. That is why every real rota has one.
+Both look perfectly reasonable on their own.
 
 So I'll ask.
 
-It isn't reasoning about employment law. It's calling the page's own rule engine, and quoting the answer back. Fifteen rules, all owned by the page.
+It isn't reasoning about employment law. It's calling the page's own rule engine, and quoting the answer back.
 
-And because these tools run inside the page, it can do something a server-side integration cannot. It puts the problem on my screen. That amber ring is the agent pointing.
+And because these tools run inside the page, it can put the problem on my screen.
 
-Now the real work. Fifteen empty slots. It runs the venue's solver, and stages fourteen assignments. Thirteen hundred and eighty four pounds of extra wages.
+Fifteen empty slots. It runs the venue's solver and stages fourteen assignments.
 
-But look at what hasn't happened. Nothing here has changed. Every dashed purple card is a proposal, drawn on the shift it would affect. So I'm reviewing the change against the thing it changes, instead of reading a list and imagining the result.
+But nothing here has changed. Every dashed purple card is a proposal, drawn on the shift it would affect. I'm reviewing the change against the thing it changes.
 
-And it's honest about the one it couldn't do. Sunday's closing lead is impossible. Liam is seventeen, and nobody else left is a certified lead.
+And it's honest about the one it couldn't do. Sunday's close is impossible: Liam is seventeen, and nobody else is a certified lead.
 
-Coverage, breaches, fairness, cost. Before, and after.
+Coverage, breaches, fairness, cost. Before and after.
 
-Notice breaches is still one. Filling empty slots doesn't fix Marco's rest period, and it isn't pretending otherwise.
+Breaches is still one. Filling empty slots doesn't fix Marco's rest period, and it isn't pretending otherwise.
 
-Fourteen changes, fourteen checkboxes. I can take twelve, and drop two.
+Fourteen changes, fourteen checkboxes.
 
 Approving is me.
 
-The agent has no tool that commits anything. No approve, no publish, anywhere in the thirty six tools it can see. That isn't a guardrail bolted on afterwards. There is simply no code path.
+The agent has no tool that commits anything. No approve, no publish, anywhere in the thirty six tools it can see. That isn't a guardrail bolted on. There is no code path.
 
-Now the rest breach. It finds a two way swap. Sofia takes Thursday morning, Marco moves across, and nobody loses a shift.
+The rest breach? It finds a legal swap. Nobody loses a shift.
 
-Publishing is a declarative Web MCP tool. An ordinary HTML form, compiled into a tool schema.
+Publishing is a declarative Web MCP tool - an ordinary HTML form.
 
-What it doesn't have is tool auto submit. Per the spec, an agent can fill this in, and then it must stop. The browser focuses the button, and waits.
+What it doesn't have is tool auto submit. So an agent can fill this in, then it must stop.
 
-So the one action that actually tells fourteen people when they're working is reachable by an agent as far as the button, and no further. The whole argument of this project is one missing HTML attribute.
+So the one action that tells fourteen people when they're working is reachable by an agent as far as the button, and no further. The whole argument of this project is one missing HTML attribute.
 
 Thirty six tools, and a polyfill, so it works in any browser today.
 
@@ -175,10 +177,11 @@ Drop the files into  media/  in this repo:
     media/beat1.mp3 ... media/beat7.mp3      (preferred)
     or  media/voiceover.mp3                  (single block)
 
-Then say so. The build script drives the live app through the demo on a
-timeline derived from the real length of each clip, screen-records it,
-and muxes your audio in:
+Then say so, and:
 
     npm run video
+
+drives the live app through the demo on a timeline derived from the real
+length of each clip, screen-records it, and muxes your audio in.
 
 Output: media/rota-demo.mp4, ready to upload.

@@ -14,7 +14,7 @@
  * Output: media/rota-demo.mp4
  */
 import { execFile, execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { promisify } from "node:util";
 import ffmpegPath from "ffmpeg-static";
@@ -29,11 +29,14 @@ const args = process.argv.slice(2);
 const URL_ARG = args.includes("--url") ? args[args.indexOf("--url") + 1] : null;
 const URL = URL_ARG ?? "https://webmcp-eta.vercel.app/";
 const DRY = args.includes("--dry");
+// Shrinks every beat to a few seconds, for checking the pipeline end to end
+// without sitting through a full three-minute take.
+const FAST = args.includes("--fast");
 const CHROME =
   process.env.CHROME_PATH ?? "C:/Program Files/Google/Chrome/Application/chrome.exe";
 
 const MEDIA = "media";
-const RAW_VIDEO = join(MEDIA, "_screen.webm");
+const FRAME_DIR = join(MEDIA, "_frames");
 const OUT = join(MEDIA, "rota-demo.mp4");
 
 const WIDTH = 1600;
@@ -63,7 +66,7 @@ async function durationOf(file) {
 }
 
 /** Word counts per beat, used to apportion a single combined audio file. */
-const BEAT_WORDS = [61, 58, 92, 36, 59, 81, 22];
+const BEAT_WORDS = [47, 43, 59, 28, 46, 62, 22];
 
 async function loadAudio() {
   const perBeat = [];
@@ -191,6 +194,79 @@ async function moveAndClick(page, selectorOrFn, { steps = 18, settle = 220 } = {
   await page.mouse.click(box.x, box.y);
   await sleep(settle);
   return true;
+}
+
+/* -- capture --------------------------------------------------------------- */
+
+/**
+ * Records the page by driving CDP's screencast directly.
+ *
+ * Puppeteer's own `page.screencast()` pipes frames into an ffmpeg child on
+ * stdin, and in testing that pipe died about fifty seconds into a three-minute
+ * run, taking the rest of the recording with it and throwing an uncatchable
+ * `write EOF` from an internal socket.
+ *
+ * Capturing frames ourselves is both more robust and more accurate. CDP only
+ * emits a frame when the page actually changes, so a fixed frame rate would
+ * drift badly across the long static stretches while the narrator is talking.
+ * Each frame carries a timestamp, so we keep them and let ffmpeg's concat
+ * demuxer hold each one for exactly as long as it was on screen. The result is
+ * in wall-clock step with the voiceover.
+ */
+async function startRecorder(page, dir) {
+  mkdirSync(dir, { recursive: true });
+  const client = await page.createCDPSession();
+  const frames = [];
+  let index = 0;
+
+  client.on("Page.screencastFrame", (frame) => {
+    const file = join(dir, `f${String(index++).padStart(6, "0")}.jpg`);
+    writeFileSync(file, Buffer.from(frame.data, "base64"));
+    frames.push({ file, t: frame.metadata.timestamp });
+    client.send("Page.screencastFrameAck", { sessionId: frame.sessionId }).catch(() => {});
+  });
+
+  await client.send("Page.startScreencast", {
+    format: "jpeg",
+    quality: 85,
+    maxWidth: 2000,
+    maxHeight: 1400,
+    everyNthFrame: 1,
+  });
+
+  return {
+    frames,
+    async stop() {
+      await client.send("Page.stopScreencast").catch(() => {});
+      await sleep(300);
+      await client.detach().catch(() => {});
+    },
+  };
+}
+
+/** Writes an ffmpeg concat list holding each frame for its real duration. */
+function writeConcatList(frames, listPath, totalSeconds) {
+  if (frames.length === 0) throw new Error("No frames were captured.");
+  const lines = [];
+  for (let i = 0; i < frames.length; i++) {
+    const next = i + 1 < frames.length ? frames[i + 1].t : frames[i].t + 0.08;
+    // No tight upper clamp. CDP only emits a frame when the page actually
+    // changes, so a still shot while the narrator talks legitimately lasts
+    // fifteen seconds. Clamping that to three silently compressed the whole
+    // timeline and threw the video out of sync with the voice.
+    const duration = Math.max(0.016, Math.min(60, next - frames[i].t));
+    // Paths are relative to the list file, which lives beside the frames.
+    lines.push(`file '${frames[i].file.split(/[\\/]/).pop()}'`);
+    lines.push(`duration ${duration.toFixed(4)}`);
+  }
+  // The concat demuxer ignores the final duration unless the last file repeats.
+  lines.push(`file '${frames[frames.length - 1].file.split(/[\\/]/).pop()}'`);
+  writeFileSync(listPath, lines.join("\n"), "utf8");
+  const captured = frames[frames.length - 1].t - frames[0].t;
+  console.log(
+    `Captured ${frames.length} frames spanning ${captured.toFixed(1)}s (timeline ${totalSeconds.toFixed(1)}s)`,
+  );
+  return captured;
 }
 
 /* -- helpers --------------------------------------------------------------- */
@@ -385,18 +461,21 @@ await setCursor(page, WIDTH / 2, HEIGHT / 2);
 await sleep(1200);
 
 const beats = buildBeats(page);
-const recorder = await page.screencast({ path: RAW_VIDEO });
+rmSync(FRAME_DIR, { recursive: true, force: true });
+const recorder = await startRecorder(page, FRAME_DIR);
 const startedAt = Date.now();
 const marks = [];
 
 for (let i = 0; i < beats.length; i++) {
-  const target = audio.durations[i] * 1000;
+  const target = (FAST ? 5 : audio.durations[i]) * 1000;
   const beatStart = Date.now();
   marks.push({ beat: beats[i].name, at: (beatStart - startedAt) / 1000 });
-  console.log(
-    `  beat ${i + 1}: ${beats[i].name} — ${(target / 1000).toFixed(1)}s budget`,
-  );
-  await beats[i].run();
+  console.log(`  beat ${i + 1}: ${beats[i].name} — ${(target / 1000).toFixed(1)}s budget`);
+  try {
+    await beats[i].run();
+  } catch (error) {
+    console.warn(`    ! beat ${i + 1} failed: ${error.message}`);
+  }
   const spent = Date.now() - beatStart;
   if (spent < target) {
     await sleep(target - spent);
@@ -405,11 +484,13 @@ for (let i = 0; i < beats.length; i++) {
   }
 }
 
-await sleep(400);
+await sleep(500);
 await recorder.stop();
 const videoSeconds = (Date.now() - startedAt) / 1000;
 await browser.close();
-console.log(`Recorded ${videoSeconds.toFixed(1)}s to ${RAW_VIDEO}`);
+
+const listFile = join(FRAME_DIR, "frames.txt");
+writeConcatList(recorder.frames, listFile, videoSeconds);
 
 /* -- mux ------------------------------------------------------------------- */
 
@@ -446,7 +527,9 @@ execFileSync(
   ffmpegPath,
   [
     "-y",
-    "-i", RAW_VIDEO,
+    "-f", "concat",
+    "-safe", "0",
+    "-i", listFile,
     "-i", audioInput,
     ...(filters.length ? ["-filter:a", filters.join(",")] : []),
     "-c:v", "libx264",
