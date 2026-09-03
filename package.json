@@ -14,7 +14,8 @@
     "selftest": "esbuild scripts/selftest.ts --bundle --platform=node --format=esm --outfile=node_modules/.tmp/selftest.mjs --log-level=error && node node_modules/.tmp/selftest.mjs",
     "smoke": "node scripts/smoke.mjs",
     "agent-test": "node scripts/agent-test.mjs",
-    "shots": "node scripts/shots.mjs"
+    "shots": "node scripts/shots.mjs",
+    "video": "node scripts/make-video.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -26,6 +27,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.0.4",
+    "ffmpeg-static": "^5.3.0",
     "puppeteer-core": "^24.43.1",
     "tailwindcss": "^4.1.14",
     "typescript": "^5.9.3",

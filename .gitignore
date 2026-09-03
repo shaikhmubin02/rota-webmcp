@@ -7,3 +7,7 @@ node_modules/.tmp
 
 .vercel
 docs/screenshot-week.png
+
+# Voiceover clips and video renders are local artifacts, not source.
+media/*
+!media/.gitkeep
