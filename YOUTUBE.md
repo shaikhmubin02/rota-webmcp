@@ -1,5 +1,9 @@
 # YouTube upload — copy and paste
 
+> **Published:** https://youtu.be/f9kQxR2vo8Y — title used: *"Rota: agent-collaborative shift scheduling built on WebMCP"*.
+> Confirm in YouTube Studio that visibility reads **Public**, not Unlisted: the challenge
+> rules ask for a publicly viewable video, and oEmbed cannot tell the two apart.
+
 The file: **`media/rota-demo.mp4`** — 1:54, 1920×1128, H.264 + AAC, 8.7 MB.
 
 ## Settings

@@ -8,7 +8,9 @@ It cannot change a single person's Saturday without the manager pressing Approve
 
 That constraint is the project. Not a safety disclaimer bolted on afterwards — the architecture. There is no `commit`, `approve` or `publish` tool anywhere in the 36-tool surface, and the publish action is a declarative WebMCP form deliberately missing `toolautosubmit`, so the browser fills it and then stops, focuses the button, and waits for a person.
 
-![The roster week, half-finished](docs/01-week-light.png)
+**[▶ Watch the 2-minute demo](https://youtu.be/f9kQxR2vo8Y)** &nbsp;·&nbsp; **[Try it live](https://webmcp-eta.vercel.app/)**
+
+[![Rota demo](https://img.youtube.com/vi/f9kQxR2vo8Y/maxresdefault.jpg)](https://youtu.be/f9kQxR2vo8Y)
 
 ---
 
@@ -27,7 +29,7 @@ This is close to ideal work for an agent — and close to ideal work for **WebMC
 
 ## Try it
 
-**Live: https://webmcp-eta.vercel.app/** &nbsp;·&nbsp; mirror: [GitHub Pages](https://shaikhmubin02.github.io/rota-webmcp/)
+**Live: https://webmcp-eta.vercel.app/** &nbsp;·&nbsp; **Demo video: https://youtu.be/f9kQxR2vo8Y** &nbsp;·&nbsp; mirror: [GitHub Pages](https://shaikhmubin02.github.io/rota-webmcp/)
 
 No sign-up, no API key, nothing to install. Two ways in:
 
@@ -186,4 +188,4 @@ MIT — see [LICENSE](LICENSE).
 
 Built for the [OpenAI WebMCP Challenge](https://openai.com/webmcp-challenge/), September 2026.
 
-Submission text: [DEVPOST.md](DEVPOST.md) · Demo script: [VIDEO.md](VIDEO.md) · Tool reference: [TOOLS.md](TOOLS.md)
+Demo video: https://youtu.be/f9kQxR2vo8Y · Submission text: [DEVPOST.md](DEVPOST.md) · Tool reference: [TOOLS.md](TOOLS.md)

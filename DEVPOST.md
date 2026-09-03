@@ -87,6 +87,7 @@ Multi-week and multi-site rosters; shift-swap requests from staff as a second, l
 
 ## Try it
 
+- **Demo video:** https://youtu.be/f9kQxR2vo8Y
 - **Live:** https://webmcp-eta.vercel.app/ (mirror: https://shaikhmubin02.github.io/rota-webmcp/)
 - **Code:** https://github.com/shaikhmubin02/rota-webmcp
 - **Tool reference:** [TOOLS.md](TOOLS.md) — generated from the source
