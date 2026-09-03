@@ -4,7 +4,7 @@ Requirements: under three minutes, public on YouTube, **must have audio**.
 
 ## Before you record
 
-- [ ] Open https://shaikhmubin02.github.io/rota-webmcp/ in a clean window, 1728×1040 or larger.
+- [ ] Open https://webmcp-eta.vercel.app/ in a clean window, 1728×1040 or larger.
 - [ ] Hit the reset icon (top right) so the week is the original broken one — 73% coverage, 15 unfilled, 2 rule breaches.
 - [ ] Light appearance (default). Dark also looks fine; pick one and stay in it.
 - [ ] Zoom the browser to 110% if your recording is 1080p, so the type is legible after compression.

@@ -27,7 +27,7 @@ This is close to ideal work for an agent — and close to ideal work for **WebMC
 
 ## Try it
 
-**Live: https://shaikhmubin02.github.io/rota-webmcp/**
+**Live: https://webmcp-eta.vercel.app/** &nbsp;·&nbsp; mirror: [GitHub Pages](https://shaikhmubin02.github.io/rota-webmcp/)
 
 No sign-up, no API key, nothing to install. Two ways in:
 
@@ -162,15 +162,15 @@ node scripts/smoke.mjs http://localhost:5173/   # 33 browser checks
 
 A static bundle with no backend, so it deploys anywhere that serves files.
 
-**GitHub Pages** (what the live URL uses) happens automatically on push to `main` via [`.github/workflows/pages.yml`](.github/workflows/pages.yml). The workflow runs the engine self-test first, so a failing build never reaches the live URL. Pages serves from a repository subpath, so the asset base comes from `VITE_BASE` at build time.
-
-**Vercel / Netlify / Cloudflare Pages** serve from the root, so no `VITE_BASE` is needed:
+**Vercel** hosts the primary URL:
 
 ```bash
 npx vercel --prod          # or: npx netlify deploy --prod --dir dist
 ```
 
-[`vercel.json`](vercel.json) sets the build, the SPA rewrite and `Permissions-Policy: tools=(self)`. That header is belt-and-braces — WebMCP is enabled by default in top-level documents, so the app works without it on hosts like Pages that cannot set response headers.
+[`vercel.json`](vercel.json) sets the build, the SPA rewrite and `Permissions-Policy: tools=(self)` — the WebMCP permissions policy, which you can see on the live response headers.
+
+**GitHub Pages** runs as a mirror, deploying automatically on push to `main` via [`.github/workflows/pages.yml`](.github/workflows/pages.yml). The workflow runs the engine self-test first, so a failing build never reaches a live URL. Pages serves from a repository subpath and cannot set response headers, so the asset base comes from `VITE_BASE` at build time and the app relies on WebMCP being enabled by default in top-level documents.
 
 ## Honest limitations
 
