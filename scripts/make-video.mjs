@@ -244,29 +244,49 @@ async function startRecorder(page, dir) {
   };
 }
 
-/** Writes an ffmpeg concat list holding each frame for its real duration. */
-function writeConcatList(frames, listPath, totalSeconds) {
+/**
+ * Writes an ffmpeg concat list holding each frame for its real duration, then
+ * pads or trims the final frame so the video is exactly `targetSeconds` long.
+ *
+ * The padding matters. CDP stops emitting frames the moment the page stops
+ * changing, so the last beat -- a static shot held while the narrator finishes
+ * -- produces no frames at all. Without padding, the video ends ten seconds
+ * early and `-shortest` truncates the end of the narration.
+ *
+ * Anchoring the total to the audio length also absorbs any accumulated drift,
+ * and it does so on the closing frame, which is static anyway.
+ */
+function writeConcatList(frames, listPath, targetSeconds) {
   if (frames.length === 0) throw new Error("No frames were captured.");
-  const lines = [];
+
+  const durations = [];
   for (let i = 0; i < frames.length; i++) {
     const next = i + 1 < frames.length ? frames[i + 1].t : frames[i].t + 0.08;
-    // No tight upper clamp. CDP only emits a frame when the page actually
-    // changes, so a still shot while the narrator talks legitimately lasts
-    // fifteen seconds. Clamping that to three silently compressed the whole
-    // timeline and threw the video out of sync with the voice.
-    const duration = Math.max(0.016, Math.min(60, next - frames[i].t));
+    // No tight upper clamp: a still shot legitimately lasts many seconds, and
+    // clamping those compresses the whole timeline.
+    durations.push(Math.max(0.016, Math.min(60, next - frames[i].t)));
+  }
+
+  const captured = durations.reduce((a, b) => a + b, 0);
+  const slack = targetSeconds - captured;
+  durations[durations.length - 1] = Math.max(0.05, durations[durations.length - 1] + slack);
+
+  const lines = [];
+  for (let i = 0; i < frames.length; i++) {
     // Paths are relative to the list file, which lives beside the frames.
     lines.push(`file '${frames[i].file.split(/[\\/]/).pop()}'`);
-    lines.push(`duration ${duration.toFixed(4)}`);
+    lines.push(`duration ${durations[i].toFixed(4)}`);
   }
   // The concat demuxer ignores the final duration unless the last file repeats.
   lines.push(`file '${frames[frames.length - 1].file.split(/[\\/]/).pop()}'`);
   writeFileSync(listPath, lines.join("\n"), "utf8");
-  const captured = frames[frames.length - 1].t - frames[0].t;
+
   console.log(
-    `Captured ${frames.length} frames spanning ${captured.toFixed(1)}s (timeline ${totalSeconds.toFixed(1)}s)`,
+    `Captured ${frames.length} frames spanning ${captured.toFixed(1)}s; ` +
+      `${slack >= 0 ? "held the last frame for an extra " : "trimmed the last frame by "}` +
+      `${Math.abs(slack).toFixed(1)}s to match ${targetSeconds.toFixed(1)}s of audio.`,
   );
-  return captured;
+  return targetSeconds;
 }
 
 /* -- helpers --------------------------------------------------------------- */
@@ -490,7 +510,10 @@ const videoSeconds = (Date.now() - startedAt) / 1000;
 await browser.close();
 
 const listFile = join(FRAME_DIR, "frames.txt");
-writeConcatList(recorder.frames, listFile, videoSeconds);
+// Anchor the picture to the narration, not to how long the driver happened
+// to take. `videoSeconds` is only reported for reference.
+console.log(`Drove the demo in ${videoSeconds.toFixed(1)}s.`);
+writeConcatList(recorder.frames, listFile, totalAudio);
 
 /* -- mux ------------------------------------------------------------------- */
 
@@ -540,7 +563,6 @@ execFileSync(
     "-vf", "scale=1920:-2:flags=lanczos,fps=30",
     "-c:a", "aac",
     "-b:a", "192k",
-    "-shortest",
     "-movflags", "+faststart",
     OUT,
   ],
