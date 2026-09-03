@@ -16,7 +16,8 @@
     "agent-test": "node scripts/agent-test.mjs",
     "shots": "node scripts/shots.mjs",
     "video": "node scripts/make-video.mjs",
-    "video:fast": "node scripts/make-video.mjs --fast"
+    "video:fast": "node scripts/make-video.mjs --fast",
+    "thumb": "node scripts/make-thumb.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",

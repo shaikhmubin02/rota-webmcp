@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      /* Devpost recommends 3:2. Captured at 2x for a crisp downscale. */
+      html, body { width: 1500px; height: 1000px; }
+
+      body {
+        background: #f5f5f7;
+        font-family: -apple-system, "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+        color: #1d1d1f;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .wrap { padding: 88px 80px 0; position: relative; z-index: 2; }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 34px;
+      }
+
+      .mark {
+        width: 52px;
+        height: 52px;
+        border-radius: 13px;
+        background: #0071e3;
+        color: #fff;
+        font-size: 31px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-name { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; }
+
+      .brand-sub { font-size: 17px; color: #6e6e73; margin-top: 1px; }
+
+      h1 {
+        font-size: 58px;
+        line-height: 1.02;
+        font-weight: 700;
+        letter-spacing: -0.035em;
+        white-space: nowrap;
+      }
+
+      h1 .muted { color: #86868b; }
+
+      .sub {
+        margin-top: 26px;
+        font-size: 25px;
+        line-height: 1.35;
+        color: #6e6e73;
+        max-width: 24ch;
+        letter-spacing: -0.012em;
+      }
+
+      .facts {
+        margin-top: 42px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .pill {
+        font-size: 16px;
+        font-weight: 500;
+        padding: 9px 16px;
+        border-radius: 999px;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+
+      .pill.accent { background: rgba(0, 113, 227, 0.1); color: #0071e3; border-color: transparent; }
+
+      /* The app itself, angled in from the right so the grid reads as a
+         product shot rather than a flat screenshot. */
+      .shot {
+        position: absolute;
+        right: -290px;
+        top: 178px;
+        width: 1180px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 40px 90px rgba(0, 0, 0, 0.22), 0 8px 24px rgba(0, 0, 0, 0.1);
+        transform: perspective(2200px) rotateY(-13deg) rotateX(2deg) scale(1.02);
+        z-index: 1;
+      }
+
+      .shot img { width: 100%; display: block; }
+
+      /* Soft light so the right side does not go muddy behind the shots. */
+      .glow {
+        position: absolute;
+        right: -300px;
+        top: -140px;
+        width: 1250px;
+        height: 1250px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 113, 227, 0.13), transparent 65%);
+        z-index: 0;
+      }
+
+      .foot {
+        position: absolute;
+        left: 80px;
+        bottom: 58px;
+        font-size: 18px;
+        color: #86868b;
+        z-index: 4;
+        letter-spacing: -0.01em;
+      }
+
+      .foot b { color: #1d1d1f; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <div class="glow"></div>
+
+    <div class="shot"><img src="app.png" alt="" /></div>
+
+    <div class="wrap">
+      <div class="brand">
+        <div class="mark">R</div>
+        <div>
+          <div class="brand-name">Rota</div>
+          <div class="brand-sub">Meridian Coffee</div>
+        </div>
+      </div>
+
+      <h1>The agent<br />does the grind.<br /><span class="muted">You stay in charge.</span></h1>
+
+      <p class="sub">Agent-collaborative shift scheduling, built on WebMCP.</p>
+
+      <div class="facts">
+        <span class="pill accent">36 tools</span>
+        <span class="pill">no commit tool</span>
+        <span class="pill">no backend</span>
+      </div>
+    </div>
+
+    <div class="foot">
+      The agent proposes an entire week. <b>Approving it is yours alone.</b>
+    </div>
+  </body>
+</html>

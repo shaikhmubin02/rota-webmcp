@@ -11,3 +11,7 @@ docs/screenshot-week.png
 # Voiceover clips and video renders are local artifacts, not source.
 media/*
 !media/.gitkeep
+!media/rota-thumbnail.png
+!media/rota-thumbnail.jpg
+!media/_thumb/
+media/_thumb/*.png
